@@ -7,6 +7,7 @@ var {User}    = require('./models/user');
 var mongooseQuery = require('../playground/mongoose-queries');
 
 var app = express();
+var port = process.env.PORT || 3000; //this is for Heroku
 
 app.use(bodyParser.json());
 
@@ -50,8 +51,8 @@ app.get('/todos/:idtest', (req, res) => {
 })
 
 
-app.listen(3000, () => {
-  console.log('Started on port 3000');
+app.listen(port, () => {
+  console.log(`Started on port ${port}`);
 });
 
 module.exports = {app};
