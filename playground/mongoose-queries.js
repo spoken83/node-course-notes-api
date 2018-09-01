@@ -15,7 +15,6 @@ var isIDvalid = (id) => {
     return true
 };
 
-
 // Todo.find({
 //   _id: id
 // }).then((todos) => {
@@ -38,6 +37,16 @@ var getTodo = (id, callbackMethod) => {
     callbackMethod (false,'Error: Find') //console.log(e));
   })
 };
+
+var deleteTodo = (id, callback) =>
+  Todo.findByIdAndRemove(id).then((todo) => {
+    if (!todo) { //null
+      callback(false,'ID does not exist')
+    }
+    else {
+      callback(true,todo)
+    }
+  }).catch((e) => callback(false,'Error: delete'))
 //
 // User.findById('5b894e7d4f57440d64649a54').then((user) => {
 //   if (!user) {
@@ -50,5 +59,6 @@ var getTodo = (id, callbackMethod) => {
 
 module.exports = {
   isIDvalid,
-  getTodo
+  getTodo,
+  deleteTodo
 };

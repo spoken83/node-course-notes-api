@@ -47,8 +47,27 @@ app.get('/todos/:idtest', (req, res) => {
   } else {
     res.status(404).send('INVALID ID');
   }
-    //send 404
 })
+
+
+app.delete('/todos/:id', (req, res) => {
+  var id = req.params.id;
+  //validate id
+  if (mongooseQuery.isIDvalid(id)) {
+    mongooseQuery.deleteTodo(id, (success, results) => {
+        if (!success) {
+          console.log(results);
+          res.status(404).send()
+        }
+        else {
+          res.status(200).send({results})
+        }
+    });
+  } else {
+    res.status(404).send('INVALID ID');
+  }
+})
+
 
 
 app.listen(port, () => {
