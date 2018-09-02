@@ -1,3 +1,4 @@
+const _ = require('lodash');
 var express   = require('express');
 var bodyParser = require('body-parser');
 
@@ -57,17 +58,45 @@ app.delete('/todos/:id', (req, res) => {
     mongooseQuery.deleteTodo(id, (success, results) => {
         if (!success) {
           console.log(results);
-          res.status(404).send()
+          return res.status(404).send()
         }
         else {
           res.status(200).send({results})
         }
     });
   } else {
-    res.status(404).send('INVALID ID');
+    return res.status(404).send('INVALID ID');
   }
 })
 
+app.patch('/todos/update/:id', (req, res) => {
+  var id = req.params.id;
+  var body = _.pick(req.body, ['text', 'completed']); //lodash picks the properties that you allow to update
+  if (mongooseQuery.isIDvalid(id)) {
+    if (_.isBoolean(body.completed) && body.completed) { //if its a boolean and value is true
+      body.completedAt = new Date().getTime()  //we add this new value, unix timestamp
+    } else {
+      body.completed = false, //set to false if its not set.
+      body.completedAt = null
+    };
+
+    console.log('here');
+    // to move to mongoose queries
+    Todo.findByIdAndUpdate(id, {$set: body}, {new: true}).then((todo) => {
+      if (!todo) {
+        console.log('Cannot find');
+        return res.status(404).send();
+      };
+      res.status(200).send({todo});
+    }).catch ((e) => {
+      return res.status(404).send()
+    })
+
+  } else {
+    return res.status(404).send('INVALID ID');
+  }
+
+})
 
 
 app.listen(port, () => {
