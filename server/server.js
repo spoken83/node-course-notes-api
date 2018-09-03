@@ -52,7 +52,6 @@ app.get('/todos/:idtest', (req, res) => {
   }
 })
 
-
 app.delete('/todos/:id', (req, res) => {
   var id = req.params.id;
   //validate id
@@ -100,6 +99,22 @@ app.patch('/todos/update/:id', (req, res) => {
 
 })
 
+//get User
+
+//post User
+app.post('/users', (req, res) => {
+  var body = _.pick(req.body, ['email', 'password']); //lodash picks the properties that you allow to update
+  var user = new User(body);
+
+  user.save().then(() => {
+    return user.generateAuthToken();
+  }).then((token) => {
+    res.header('x-auth', token).send(user);
+  }).catch ((e) => {
+    res.status(404).send(e);
+  })
+
+})
 
 app.listen(port, () => {
   console.log(`Started on port ${port}`);
